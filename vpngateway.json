@@ -1,0 +1,72 @@
+{
+  "bgpSettings": {
+    "asn": 65515,
+    "peerWeight": 0,
+    "bgpPeeringAddresses": [
+      {
+        "ipconfigurationId": "Instance0",
+        "customBgpIpAddresses": []
+      },
+      {
+        "ipconfigurationId": "Instance1",
+        "customBgpIpAddresses": []
+      }
+    ]
+  },
+  "location": "westeurope",
+  "properties": {
+    "virtualHub": {
+      "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/virtualHubs/commify-secure-hub"
+    },
+    "connections": [
+      {
+        "name": "to-alpha",
+        "properties": {
+          "remoteVpnSite": {
+            "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/vpnSites/alpha"
+          },
+          "vpnLinkConnections": [
+            {
+              "name": "Connection-Link1",
+              "properties": {
+                "vpnSiteLink": {
+                  "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/vpnSites/vpnSite1/vpnSiteLinks/siteLink1"
+                },
+                "connectionBandwidth": 200,
+                "vpnConnectionProtocolType": "IKEv2",
+                "sharedKey": "key",
+                "egressNatRules": [
+                  {
+                    "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/vpnGateways/gateway1/natRules/nat03"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ],
+
+    "natRules": [
+      {
+        "name": "nat03",
+        "properties": {
+          "type": "Static",
+          "mode": "EgressSnat",
+          "internalMappings": [
+            {
+              "addressSpace": "0.0.0.0/26"
+            }
+          ],
+          "externalMappings": [
+            {
+              "addressSpace": "192.168.0.0/26"
+            }
+          ],
+          "ipConfigurationId": ""
+        }
+      }
+    ],
+    "isRoutingPreferenceInternet": false
+  }
+}

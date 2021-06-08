@@ -1,0 +1,21 @@
+{
+  "location": "West Europe",
+  "properties": {
+    "virtualWan": {
+      "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/virtualWans/commify-virtual-wan"
+    },
+    "isSecuritySite": false,
+    "vpnSiteLinks": [
+      {
+        "name": "to-gamma-link1",
+        "properties": {
+          "ipAddress": "13.73.190.26",
+          "bgpProperties": {
+            "bgpPeeringAddress": "10.102.0.254",
+            "asn": 66523
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "value": "commify"
+    },
+    "site": {
+      "value": {
+        "name": "delta",
+        "ipAddress": "13.73.190.26",
+        "asn": 66523,
+        "sharedKey": "c0mm1fy",
+        "bgpPeeringAddress": "10.103.0.254",
+        "deviceProperties": {
+          "deviceModel": "VNETGW",
+          "deviceVendor": "Azure",
+          "linkSpeedInMbps": 100
+        }
+      }
+    }
+  }
+}

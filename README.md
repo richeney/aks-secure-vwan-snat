@@ -1,5 +1,7 @@
 # Secure Virtual WAN with NAT to public IP and then NAT per connection
 
+> **OK, this README.md needs some serious validation as much of it has been put togthere out of order, with a mix of Terraform, CLI and Portal.** It is incomplete, and references to commify and richeney need to be removed.
+
 References:
 
 * <https://docs.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-new>
@@ -24,7 +26,7 @@ az extension add --name aks-preview
 
 Note the terraform.tfvars - example site:
 
-```json
+```text
 sites = [
   {
     name          = "alpha"
@@ -58,17 +60,16 @@ sites = [
 
     * Used 201.1.0.0/24 for the hub address space. (Smallest possible is /24.)
     * Include VPN Gateway but don't select Security Partner Providers
-    * Standard Firewall enabled with 1 public IP and default Deny Policy
+    * In Settings -> Configuration, set Branch-to-branch as disabled.
 
 1. Added alpha site using s2svpn.sh
 1. Check BGP with routes.sh
 
 > Will add beta and gamma later.
 
-
 ## AKS spoke vNet
 
-Set for kubenet, optional Application Gateway Ingress Controller
+Set for kubenet, separate loadbalancer subnet plus identity
 
 1. Create the resource group
 
@@ -80,29 +81,31 @@ Set for kubenet, optional Application Gateway Ingress Controller
 
 1. Create the virtual network
 
+    Tiny address space for "public" AKS nodes, plus private space for internal load balancer and test VM.
+
     ```bash
     az network vnet create --name commify-aks \
       --location "West Europe" \
       --resource-group "commify-aks" \
-      --address-prefixes 172.21.0.0/16 197.6.0.0/24 10.76.0.0/27
+      --address-prefixes 1.2.3.0/29 10.76.0.0/24
     ```
 
 1. Add the subnets
 
-    Pods, using a nice big private CIDR address prefix.
+    AKS nodes.
 
     ```bash
     az network vnet subnet create --name aks \
-      --address-prefixes 172.21.0.0/16 \
+      --address-prefixes 1.2.3.0/29 \
       --vnet-name "commify-aks" \
       --resource-group "commify-aks"
     ```
 
-    Application Gateway, using a smaller public address prefix. (Optional.)
+    Load Balancer subnet
 
     ```bash
-    az network vnet subnet create --name appgw \
-      --address-prefixes 197.6.0.0/24 \
+    az network vnet subnet create --name loadbalancer \
+      --address-prefixes 10.76.0.32/27 \
       --vnet-name "commify-aks" \
       --resource-group "commify-aks"
     ```
@@ -129,13 +132,19 @@ Set for kubenet, optional Application Gateway Ingress Controller
 1. Create a user managed assigned identity
 
     ```bash
-    msiId=$(az identity create --name "commify" \
+    az identity create --name "commify" \
       --location "West Europe" \
-      --resource-group "commify-aks" \
-      --query id --output tsv)
+      --resource-group "commify-aks"
     ```
 
-## VM
+1. Assign to the virtual network
+
+    ```bash
+    msiAppId=$(az identity show --name commify --resource-group commify-aks --query principalId --output tsv)
+    az role assignment create --role "Network Contributor" --assignee $msiAppId --scope $vnetId
+    ```
+
+## Test VM
 
 1. Create a test VM
 
@@ -159,7 +168,7 @@ Set for kubenet, optional Application Gateway Ingress Controller
 
 ## Add the spoke to the Virtual WAN
 
-Using default route tables initially. Will get more creative later when we need to NAT.
+Using default route tables in vWAN initially. Will get more creative later when we need to NAT.
 
 1. Used spoke.sh
 
@@ -167,37 +176,39 @@ Using default route tables initially. Will get more creative later when we need 
 
 Spoke test VM should be 10.76.0.4, and alpha VM will be 10.1.0.4.
 
-1. SSH back on to the test
+1. Copy up your SSH key
+
+    ```bash
+    scp ~/.ssh/id_rsa richeney@commify-richeney.westeurope.cloudapp.azure.com:~/.ssh/
+    ```
+
+1. SSH back on to the test VM
 
     ```bash
     ssh commify-richeney.westeurope.cloudapp.azure.com
     ```
 
-1. SSH to alpha and check source IP
+1. SSH to alpha
 
     ```bash
     ssh 10.1.0.4
     ```
 
-## Set SNAT
+1. Display the source IP
 
-1. Grab firewall ID
+  ```bash
+  echo $SSH_CLIENT | awk '{print $1}'
+  ```
 
-1. Set firewall to SNAT to private addresses
+  Expected output: `10.76.0.4`.
+
+  Exit back to your machine.
+
+## AKS
+
+1. Grab the virtual network resource ID again
 
     ```bash
-    az network firewall update \
--n <fw-name> \
--g <resourcegroup-name> \
---private-ranges 192.168.1.0/24 192.168.1.10 IANAPrivateRanges
-    ```
-
-
-## AKS with Application Gateway Ingress Controller
-
-1. Grab the virtual network resource ID
-
-    ````bash
     vnetId=$(az network vnet show --name commify-aks \
       --resource-group "commify-aks" \
       --query id --output tsv)
@@ -206,26 +217,23 @@ Spoke test VM should be 10.76.0.4, and alpha VM will be 10.1.0.4.
 1. Create a user managed assigned identity
 
     ```bash
-    msiId=$(az identity create --name "commify" \
-      --location "West Europe" \
+    msiId=$(az identity show --name "commify" \
       --resource-group "commify-aks" \
       --query id --output tsv)
     ```
 
 1. Deploy the AKS cluster
 
+    Very standard AKS deployment, except using precreated subnet and user assigned identity
+
     ```bash
     az aks create --name commify-aks \
       --location "West Europe" \
       --resource-group "commify-aks" \
       --network-plugin kubenet \
-      --pod-cidr "172.24.0.0/14" \
+      --pod-cidr "172.21.0.0/16" \
       --vnet-subnet-id $vnetId/subnets/aks \
       --service-cidr "10.0.0.0/16" \
-      --enable-addons ingress-appgw \
-      --outbound-type userDefinedRouting \
-      --appgw-name appGwIngressController \
-      --appgw-subnet-id $vnetId/subnets/appgw \
       --zones 1 2 3 \
       --node-vm-size Standard_DS2_v2 \
       --admin-username azureuser \
@@ -236,14 +244,23 @@ Spoke test VM should be 10.76.0.4, and alpha VM will be 10.1.0.4.
     Notes
 
     * kubenet, so pod CIDR is _not_ in the subnet address space
-    * can specify -vnet-subnet-id and -appgw-subnet-id if required
-    the service-cidr is private and non-routable. Default shown.
+    * the service-cidr is private and non-routable. Default shown.
 
-1. Check it is working
+1. Merge the AKS credentials
 
     ```bash
     az aks get-credentials --name commify-aks --resource-group commify-aks
-    kubectl apply -f aspnetapp.yaml
+    ```
+
+1. Confirm kubectl works
+
+    ```bash
+    kubectl get nodes
+    ```
+
+1. Inspector Gadget deployment with private loadbalancer
+
+    ```bash
     kubectl apply -f inspectorgadget.yaml
     ```
 
@@ -255,12 +272,70 @@ Spoke test VM should be 10.76.0.4, and alpha VM will be 10.1.0.4.
     --public-ip-address-dns-name commify-richeney \
     --image ubuntults \
     --size Standard_DS2_v2 \
-    --vnet-name commify-aks --subnet appgw \
+    --vnet-name commify-aks --subnet test \
     --generate-ssh-keys
     ```
 
-## Deleting notes
+1. Install links on the test VM and access Inspector Gadget
 
-You have to remove pods that have AGIC annotations in order to remove the aks cluster. Do I need AGIC?
+    ```bash
+    ssh commify-richeney.westeurope.cloudapp.azure.com
+    sudo apt install links -y
+    links 10.76.0.36
+    ```
 
-Test with single VM and IP SNAT and S2S NAT.
+    You should be on the Inspector Gadget homepage. If so the internal loadbalancer service is working.
+
+    You can use cursor keys to browse.
+
+1. Create a test ubuntu pod
+
+    ```bash
+    kubectl apply -f ubuntu.yaml
+    ```
+
+1. Log on and install openssh
+
+    ```bash
+    kubectl exec --stdin --tty ubuntu -- /bin/bash
+    apt-get update && apt-get install openssh-client -y
+    exit
+    ```
+
+1. Upload the private key
+
+    ```bash
+    kubectl cp ~/.ssh/id_rsa ubuntu:/id_rsa
+    ```
+
+1. Log back in and SSH to the test VM
+
+    ```bash
+    kubectl exec --stdin --tty ubuntu -- /bin/bash
+    ssh -i id_rsa richeney@10.76.0.4
+    echo $SSH_CLIENT | awk '{print $1}'
+    ```
+
+    OK, so the pod's egress traffic should NAT through the bridge to the node IP address. (E.g. 1.2.3.4-6.)
+
+    Exit back to your laptop.
+
+## Add beta site
+
+1. Run s2svpn.sh again, specifying the site
+
+    ```bash
+    ./s2svpn.sh beta
+    ```
+
+1. Check
+
+    If you test ssh from the container and or test VM then it should reach the hosts in both alpha and beta, but check the effective routes on the NICs and they cannot see each other's address spaces as the Virtual WAN's properties.allowBranchToBranchTraffic boolean is set to false.
+
+## Add beta site
+
+1. s2svpn.sh
+
+    ```bash
+    ./s2svpn.sh gamma
+    ```

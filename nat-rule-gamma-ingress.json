@@ -1,0 +1,16 @@
+{
+  "properties": {
+    "mode": "IngressSnat",
+    "type": "Static",
+    "internalMappings": [
+      {
+        "addressSpace": "10.2.0.0/24"
+      }
+    ],
+    "externalMappings": [
+      {
+        "addressSpace": "10.102.0.0/24"
+      }
+    ]
+  }
+}

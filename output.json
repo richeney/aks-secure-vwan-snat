@@ -1,0 +1,187 @@
+{
+  "bgpSettings": {
+    "asn": 65515,
+    "bgpPeeringAddress": null,
+    "bgpPeeringAddresses": [
+      {
+        "customBgpIpAddresses": [],
+        "defaultBgpIpAddresses": [
+          "201.1.0.13"
+        ],
+        "ipconfigurationId": "Instance0",
+        "tunnelIpAddresses": [
+          "20.61.131.249",
+          "201.1.0.4"
+        ]
+      },
+      {
+        "customBgpIpAddresses": [],
+        "defaultBgpIpAddresses": [
+          "201.1.0.12"
+        ],
+        "ipconfigurationId": "Instance1",
+        "tunnelIpAddresses": [
+          "20.61.131.236",
+          "201.1.0.5"
+        ]
+      }
+    ],
+    "peerWeight": 0
+  },
+  "connections": [
+    {
+      "connectionBandwidth": 10,
+      "connectionStatus": null,
+      "dpdTimeoutSeconds": null,
+      "egressBytesTransferred": 0,
+      "enableBgp": true,
+      "enableInternetSecurity": false,
+      "enableRateLimiting": false,
+      "etag": "W/\"1f5acdad-0893-4708-99b2-7e5e71a98997\"",
+      "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/vpnGateways/2b74b8806d9b43bd82e37129aa22f2d9-westeurope-gw/vpnConnections/to-alpha",
+      "ingressBytesTransferred": 0,
+      "ipsecPolicies": [],
+      "name": "to-alpha",
+      "provisioningState": "Succeeded",
+      "remoteVpnSite": {
+        "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/vpnSites/alpha",
+        "resourceGroup": "commify-secure-hub"
+      },
+      "resourceGroup": "commify-secure-hub",
+      "routingConfiguration": {
+        "associatedRouteTable": {
+          "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/virtualHubs/commify-secure-hub/hubRouteTables/defaultRouteTable",
+          "resourceGroup": "commify-secure-hub"
+        },
+        "propagatedRouteTables": {
+          "ids": [
+            {
+              "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/virtualHubs/commify-secure-hub/hubRouteTables/defaultRouteTable",
+              "resourceGroup": "commify-secure-hub"
+            }
+          ],
+          "labels": [
+            "default"
+          ]
+        },
+        "vnetRoutes": {
+          "staticRoutes": []
+        }
+      },
+      "routingWeight": 0,
+      "sharedKey": "308201C906092A864886F70D010703A08201BA308201B6020100318201823082017E0201003066304F310B3009060355040613025553311E301C060355040A13154D6963726F736F667420436F72706F726174696F6E3120301E060355040313174D6963726F736F66742052534120544C5320434120303102136B000D306DA1799BEFAF17421D0000000D306D300D06092A864886F70D010101050004820100995331062452A57CFE3D432B74706573E26B686F20003223544D56AA086BC92EE50111CA2E385BBB83A12FED9C978DCB8BA3F24D06835D40B2BF40CF3806FCF08DB5EE2C41162667D14C2C6F25BAE54BD8BD07E9A9E60EF47CADE1D4535C100C8A6805DB250178FC47E2D5A76D5C9C9861CD882ECBE433BC74C36517966B776DCC2A7AA12C5DA583FF99217AD9619DFE35845D5C6CBDCE279053B9B8BC8BABC60C4E80F51BA08F873390F06C48A801B02DEC3F3779832AA58DB333261CD7B8109E504817B3DB591F99E8FB2146AC3EE3F56D8BBFB648FDFF174FBC104F3D5874F0731764E317A5C0E172EAE1CEBAAF3F035AF6680EF0A7A259D39D5767709675302B06092A864886F70D010701301406082A864886F70D0307040827BBC3B63BC01EDD80082A67DDAD8915E592",
+      "type": "Microsoft.Network/vpnGateways/vpnConnections",
+      "useLocalAzureIpAddress": false,
+      "usePolicyBasedTrafficSelectors": false,
+      "vpnConnectionProtocolType": "IKEv2",
+      "vpnLinkConnections": null
+    },
+    {
+      "connectionBandwidth": 10,
+      "connectionStatus": null,
+      "dpdTimeoutSeconds": null,
+      "egressBytesTransferred": 0,
+      "enableBgp": true,
+      "enableInternetSecurity": false,
+      "enableRateLimiting": false,
+      "etag": "W/\"1f5acdad-0893-4708-99b2-7e5e71a98997\"",
+      "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/vpnGateways/2b74b8806d9b43bd82e37129aa22f2d9-westeurope-gw/vpnConnections/to-beta",
+      "ingressBytesTransferred": 0,
+      "ipsecPolicies": [],
+      "name": "to-beta",
+      "provisioningState": "Succeeded",
+      "remoteVpnSite": {
+        "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/vpnSites/beta",
+        "resourceGroup": "commify-secure-hub"
+      },
+      "resourceGroup": "commify-secure-hub",
+      "routingConfiguration": {
+        "associatedRouteTable": {
+          "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/virtualHubs/commify-secure-hub/hubRouteTables/defaultRouteTable",
+          "resourceGroup": "commify-secure-hub"
+        },
+        "propagatedRouteTables": {
+          "ids": [
+            {
+              "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/virtualHubs/commify-secure-hub/hubRouteTables/defaultRouteTable",
+              "resourceGroup": "commify-secure-hub"
+            }
+          ],
+          "labels": [
+            "default"
+          ]
+        },
+        "vnetRoutes": {
+          "staticRoutes": []
+        }
+      },
+      "routingWeight": 0,
+      "sharedKey": "308201C906092A864886F70D010703A08201BA308201B6020100318201823082017E0201003066304F310B3009060355040613025553311E301C060355040A13154D6963726F736F667420436F72706F726174696F6E3120301E060355040313174D6963726F736F66742052534120544C5320434120303102136B000D306DA1799BEFAF17421D0000000D306D300D06092A864886F70D0101010500048201003C772E157115CDE59B25042B3E044A25A4A7DD3367A6F3A72086387EB89B4E56B0886A7E793E35E802F515EBC577E7AD9BDD55848E4F3516F7AD1183A777DA4D805DDE133C7CA47B6FDF7F269D8979F4EFD7BD9A47C3A44301336C2587E6E11B55C82FD82436A66211162FDAAB53667B6EEF04CC4555741D4FAE40262299B1E171E1C34BFEA2D935D7DF0FEE0AC88B812F8D379C8A006625F6F18C8A6048E1F8A3F83B1B6C721054AFCEAA08CB945ACCC8E0E51D620A4C61BBCEDBAA686B2D6BF67E3AE9239B1540A10ED86FE94E8CCF2F920D2C653E864261E3AC26419E101F17608D8737D33657CC2A90B87356BB3E1A869DCA3310E185584865B2BA3BC7B0302B06092A864886F70D010701301406082A864886F70D03070408A20B6190CEF69DB68008D39B7BAB609FD973",
+      "type": "Microsoft.Network/vpnGateways/vpnConnections",
+      "useLocalAzureIpAddress": false,
+      "usePolicyBasedTrafficSelectors": false,
+      "vpnConnectionProtocolType": "IKEv2",
+      "vpnLinkConnections": null
+    },
+    {
+      "connectionBandwidth": 10,
+      "connectionStatus": null,
+      "dpdTimeoutSeconds": null,
+      "egressBytesTransferred": 0,
+      "enableBgp": true,
+      "enableInternetSecurity": false,
+      "enableRateLimiting": false,
+      "etag": "W/\"1f5acdad-0893-4708-99b2-7e5e71a98997\"",
+      "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/vpnGateways/2b74b8806d9b43bd82e37129aa22f2d9-westeurope-gw/vpnConnections/to-gamma",
+      "ingressBytesTransferred": 0,
+      "ipsecPolicies": [],
+      "name": "to-gamma",
+      "provisioningState": "Succeeded",
+      "remoteVpnSite": {
+        "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/vpnSites/gamma",
+        "resourceGroup": "commify-secure-hub"
+      },
+      "resourceGroup": "commify-secure-hub",
+      "routingConfiguration": {
+        "associatedRouteTable": {
+          "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/virtualHubs/commify-secure-hub/hubRouteTables/defaultRouteTable",
+          "resourceGroup": "commify-secure-hub"
+        },
+        "propagatedRouteTables": {
+          "ids": [
+            {
+              "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/virtualHubs/commify-secure-hub/hubRouteTables/defaultRouteTable",
+              "resourceGroup": "commify-secure-hub"
+            }
+          ],
+          "labels": [
+            "default"
+          ]
+        },
+        "vnetRoutes": {
+          "staticRoutes": []
+        }
+      },
+      "routingWeight": 0,
+      "sharedKey": "308201C906092A864886F70D010703A08201BA308201B6020100318201823082017E0201003066304F310B3009060355040613025553311E301C060355040A13154D6963726F736F667420436F72706F726174696F6E3120301E060355040313174D6963726F736F66742052534120544C5320434120303102136B000D306DA1799BEFAF17421D0000000D306D300D06092A864886F70D0101010500048201003CD8C6BA6E37DEC8862F86F9D71BCF16C4E3A5CADED524E86E420E810195943494761178340E32C9DA1A24ED30A88AD4415CC3B5684A24667A28844C16525D4A1FC4B12404E9DED831A15537A2976F485610E30A8F1145D98DEEBA3E187BF2BABA1B441043E0F945AC86F3D06E44B799CDE6C2C027528A0A6E8594A0966DE1261B3A19B123A9B1332ECC4B2A8B8E22CC14B18EB30DC44EC79908C6B6DA6EBB68521F6322EB6211737191B831A17FA7FD23A0DB5952EA88EA9EA0E51F5FDFE1CA4351B72ECBA95F0795AFA99BDDCC0124DD3B9890288F733891644277FB864BFD14745350A0F09568AEE0E5F79C3AD448F39EA1D05810F631A64F1E72C3D7B446302B06092A864886F70D010701301406082A864886F70D0307040871F1CC7E2AD23BA58008417CB2003FCEBD23",
+      "type": "Microsoft.Network/vpnGateways/vpnConnections",
+      "useLocalAzureIpAddress": false,
+      "usePolicyBasedTrafficSelectors": false,
+      "vpnConnectionProtocolType": "IKEv2",
+      "vpnLinkConnections": null
+    }
+  ],
+  "etag": "W/\"1f5acdad-0893-4708-99b2-7e5e71a98997\"",
+  "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/vpnGateways/2b74b8806d9b43bd82e37129aa22f2d9-westeurope-gw",
+  "location": "westeurope",
+  "name": "2b74b8806d9b43bd82e37129aa22f2d9-westeurope-gw",
+  "provisioningState": "Succeeded",
+  "resourceGroup": "commify-secure-hub",
+  "tags": null,
+  "type": "Microsoft.Network/vpnGateways",
+  "virtualHub": {
+    "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/virtualHubs/commify-secure-hub",
+    "resourceGroup": "commify-secure-hub"
+  },
+  "vpnGatewayScaleUnit": 1
+}
