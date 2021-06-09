@@ -25,13 +25,14 @@ info()
   return 0
 }
 
+prefix=commify
 site=${1:-alpha}
 
-hubrg=commify-secure-hub
-vwan=commify-virtual-wan
-siterg=commify-$site
+hubrg=$prefix-secure-hub
+vwan=$prefix-virtual-wan
+siterg=$prefix-$site
 
-siteVpnGw=commify-${site}-vpngw
+siteVpnGw=$prefix-${site}-vpngw
 info "Remote VPN Gateway:" $siteVpnGw
 
 hub=$(az network vwan list --resource-group $hubrg --output tsv --query [0].name)

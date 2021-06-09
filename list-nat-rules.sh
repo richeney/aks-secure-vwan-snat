@@ -26,7 +26,8 @@ info()
   return 0
 }
 
-hubrg=commify-secure-hub
+prefix=commify
+hubrg=$prefix-secure-hub
 hubrgId=$(az group show --name commify-secure-hub --query id --output tsv)
 hubVpnGw=$(az network vpn-gateway list --resource-group $hubrg --output tsv --query "[0].name")
 
