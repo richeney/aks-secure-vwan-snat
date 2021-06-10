@@ -4,9 +4,14 @@ variable "name" {
 }
 
 variable "subnet_id" {
-  description = "Resource ID for a subnet. NOTE!! Not actually used as we're hardcoding."
+  description = "Resource ID for a subnet."
   type        = string
-  default     = ""
+}
+
+variable "ip_address" {
+  description = "Static ip_address. Will use DHCP if not specified."
+  type        = string
+  default     = null
 }
 
 variable "asg_id" {

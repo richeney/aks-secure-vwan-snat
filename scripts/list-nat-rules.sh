@@ -28,7 +28,7 @@ info()
 
 prefix=commify
 hubrg=$prefix-secure-hub
-hubrgId=$(az group show --name commify-secure-hub --query id --output tsv)
+hubrgId=$(az group show --name $hubrg --query id --output tsv)
 hubVpnGw=$(az network vpn-gateway list --resource-group $hubrg --output tsv --query "[0].name")
 
 uri="https://management.azure.com/$hubrgId/providers/Microsoft.Network/vpnGateways/$hubVpnGw/natRules?api-version=2020-11-01"

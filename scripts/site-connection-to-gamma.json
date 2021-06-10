@@ -5,22 +5,23 @@
     },
     "vpnLinkConnections": [
       {
-        "name": "to-gamma-connection1",
+        "name": "gamma",
         "properties": {
-          "vpnSiteLink": {
-            "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/vpnSites/gamma/vpnSiteLinks/to-gamma-link1"
-          },
           "connectionBandwidth": 200,
-          "vpnConnectionProtocolType": "IKEv2",
-          "sharedKey": "c0mm1fy",
-          "vpnLinkConnectionMode": "Default",
-          "usePolicyBasedTrafficSelectors": false,
+          "egressNatRules": [],
+          "enableBgp": true,
           "ingressNatRules": [
             {
               "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/vpnGateways/2b74b8806d9b43bd82e37129aa22f2d9-westeurope-gw/natRules/gamma-ingress"
             }
           ],
-          "egressNatRules": []
+          "sharedKey": "c0mm1fy",
+          "usePolicyBasedTrafficSelectors": false,
+          "vpnConnectionProtocolType": "IKEv2",
+          "vpnLinkConnectionMode": "Default",
+          "vpnSiteLink": {
+            "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/vpnSites/gamma/vpnSiteLinks/to-gamma-link1"
+          }
         }
       }
     ]

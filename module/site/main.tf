@@ -18,14 +18,20 @@ resource "azurerm_subnet" "default" {
 }
 
 resource "azurerm_subnet" "bastion" {
-  name                 = "AzureBastionSubnet"
+  name = "AzureBastionSubnet"
+  depends_on = [
+    azurerm_subnet.default
+  ]
   resource_group_name  = azurerm_resource_group.site.name
   virtual_network_name = azurerm_virtual_network.site.name
   address_prefixes     = [cidrsubnet(var.address_space, 3, 6)]
 }
 
 resource "azurerm_subnet" "vpngw" {
-  name                 = "GatewaySubnet"
+  name = "GatewaySubnet"
+  depends_on = [
+    azurerm_subnet.bastion
+  ]
   resource_group_name  = azurerm_resource_group.site.name
   virtual_network_name = azurerm_virtual_network.site.name
   address_prefixes     = [cidrsubnet(var.address_space, 3, 7)]
@@ -34,7 +40,7 @@ resource "azurerm_subnet" "vpngw" {
 //==============================================================================
 
 module "linux" {
-  source              = "./linux"
+  source              = "../linux"
   resource_group_name = azurerm_resource_group.site.name
   location            = azurerm_resource_group.site.location
   tags                = var.tags
@@ -42,6 +48,8 @@ module "linux" {
   name           = var.name
   depends_on     = [azurerm_subnet.default]
   admin_username = var.admin_username
+  subnet_id      = azurerm_subnet.default.id
+  ip_address     = cidrhost(azurerm_subnet.default.address_prefixes[0], 4)
 }
 
 //==============================================================================

@@ -9,12 +9,6 @@ terraform {
 
 locals {}
 
-data "azurerm_subnet" "default" {
-  name                 = "Default"
-  virtual_network_name = var.name
-  resource_group_name  = var.name
-}
-
 resource "azurerm_public_ip" "linux" {
   for_each            = toset(var.dns_label != null ? [var.name] : [])
   name                = "${var.name}-pip"
@@ -35,11 +29,11 @@ resource "azurerm_network_interface" "linux" {
   ip_configuration {
     name      = "primary"
     primary   = true
-    subnet_id = data.azurerm_subnet.default.id
+    subnet_id = var.subnet_id
     // private_ip_address_allocation = "Dynamic"
     // Force first usable address as we're only creating one VM per area
-    private_ip_address_allocation = "Static"
-    private_ip_address            = cidrhost(data.azurerm_subnet.default.address_prefixes[0], 4)
+    private_ip_address_allocation = var.ip_address != null ? "Static" : "Dynamic"
+    private_ip_address            = var.ip_address
     public_ip_address_id          = var.dns_label != null ? azurerm_public_ip.linux[var.name].id : null
   }
 }
