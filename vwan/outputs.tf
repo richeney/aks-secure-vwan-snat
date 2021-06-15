@@ -10,7 +10,7 @@ output "vpn_gateway" {
   value = azurerm_vpn_gateway.vwan
 }
 
-output "local_network_gateway" {
+output "local_network_gateways" {
   value = [
     azurerm_local_network_gateway.lng0,
     azurerm_local_network_gateway.lng1

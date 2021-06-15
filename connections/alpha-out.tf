@@ -1,18 +1,4 @@
-data "terraform_remote_state" "vwan" {
-  backend = "local"
 
-  config = {
-    path = "../../vwan/terraform.tfstate"
-  }
-}
-
-data "terraform_remote_state" "sites" {
-  backend = "local"
-
-  config = {
-    path = "../../sites/terraform.tfstate"
-  }
-}
 
 resource "azurerm_vpn_site" "alpha" {
   name                = "alpha-site"
@@ -25,12 +11,12 @@ resource "azurerm_vpn_site" "alpha" {
 
   link {
     name          = "link1"
-    ip_address    = data.terraform_remote_state.sites.outputs.site["alpha"].ip_address
+    ip_address    = data.terraform_remote_state.sites.outputs.site["alpha"].virtual_network_gateway.ip_address
     speed_in_mbps = 100
 
     bgp {
-      asn             = data.terraform_remote_state.sites.outputs.site["alpha"].asn
-      peering_address = data.terraform_remote_state.sites.outputs.site["alpha"].bgp_peering_address
+      asn             = data.terraform_remote_state.sites.outputs.site["alpha"].virtual_network_gateway.asn
+      peering_address = data.terraform_remote_state.sites.outputs.site["alpha"].virtual_network_gateway.bgp_peering_address
     }
   }
 }
