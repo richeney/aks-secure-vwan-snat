@@ -9,7 +9,7 @@ resource "azurerm_virtual_wan" "vwan" {
   location            = azurerm_resource_group.vwan.location
 
   type                           = "Standard"
-  allow_branch_to_branch_traffic = false
+  allow_branch_to_branch_traffic = var.allow_branch_to_branch_traffic
 }
 
 resource "azurerm_virtual_hub" "vwan" {
