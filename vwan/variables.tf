@@ -14,7 +14,7 @@ variable "address_prefix" {
   default = "172.20.0.0/24"
 }
 
-variable "aks_virtual_network_id" {
-  description = "Resource ID for the virtual network used by the Azure Kubernetes Service cluster."
-  type        = string
+variable "allow_branch_to_branch_traffic" {
+  type    = bool
+  default = false
 }

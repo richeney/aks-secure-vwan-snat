@@ -16,6 +16,11 @@ output "siteinfo" {
       asn                 = var.asn
       ip_address          = azurerm_public_ip.vpngw.ip_address
       bgp_peering_address = azurerm_virtual_network_gateway.vpngw.bgp_settings[0].peering_address
+    },
+    virtual_network = {
+      name          = azurerm_virtual_network.site.name
+      id            = azurerm_virtual_network.site.id
+      address_space = azurerm_virtual_network.site.address_space
     }
   }
 }

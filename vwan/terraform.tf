@@ -10,3 +10,11 @@ terraform {
 provider "azurerm" {
   features {}
 }
+
+data "terraform_remote_state" "aks" {
+  backend = "local"
+
+  config = {
+    path = "../aks/terraform.tfstate"
+  }
+}

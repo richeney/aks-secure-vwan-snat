@@ -8,16 +8,19 @@ resource "azurerm_vpn_site" "beta" {
 
   device_model  = "VNETGW"
   device_vendor = "Azure"
+  address_cidrs = data.terraform_remote_state.sites.outputs.site["beta"].virtual_network.address_space
 
   link {
     name          = "link1"
     ip_address    = data.terraform_remote_state.sites.outputs.site["beta"].virtual_network_gateway.ip_address
     speed_in_mbps = 100
 
+    /*
     bgp {
       asn             = data.terraform_remote_state.sites.outputs.site["beta"].virtual_network_gateway.asn
       peering_address = data.terraform_remote_state.sites.outputs.site["beta"].virtual_network_gateway.bgp_peering_address
     }
+    */
   }
 }
 
@@ -29,7 +32,7 @@ resource "azurerm_vpn_gateway_connection" "beta" {
   vpn_link {
     name             = "link1"
     vpn_site_link_id = azurerm_vpn_site.beta.link[0].id
-    bgp_enabled      = true
+    bgp_enabled      = false
     shared_key       = md5(data.terraform_remote_state.sites.outputs.site["beta"].resource_group.id) // Just a string - md5 gives a nice predictable one.
   }
 }
@@ -46,7 +49,6 @@ resource "azurerm_virtual_network_gateway_connection" "beta-lng0" {
   type                       = "IPsec"
   virtual_network_gateway_id = data.terraform_remote_state.sites.outputs.site["beta"].virtual_network_gateway.id
   local_network_gateway_id   = data.terraform_remote_state.vwan.outputs.local_network_gateways[0].id
-  enable_bgp                 = true
+  enable_bgp                 = false
   shared_key                 = md5(data.terraform_remote_state.sites.outputs.site["beta"].resource_group.id) // Just a string - md5 gives a nice predictable one.
-
 }

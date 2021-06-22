@@ -32,6 +32,6 @@ resource "azurerm_vpn_gateway" "vwan" {
 resource "azurerm_virtual_hub_connection" "aks" {
   name                      = "aks"
   virtual_hub_id            = azurerm_virtual_hub.vwan.id
-  remote_virtual_network_id = var.aks_virtual_network_id
+  remote_virtual_network_id = data.terraform_remote_state.aks.outputs.virtual_network.id
   depends_on                = [azurerm_vpn_gateway.vwan]
 }
