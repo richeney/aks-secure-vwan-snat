@@ -6,9 +6,18 @@ ADD A GRAPHIC.
 
 Example Terraform configs for
 
-* Three sites, alpha, beta and gamma, Each has a single virtual network, a single VM and a network gateway. Address space conflict between beta and gamma.
-* AKS using a small public address space and a separate subnet for the load balancer. Small Ubuntu pod for testing, plus a VM in the same subnet.
-* Virtual WAN with NAT rules applied to one connection using REST API in a null provider.
+* Three sites, alpha, beta and gamma, Each has
+    * a single virtual network
+    * a single VM for testing
+    * a virtual network gateway
+* The POC requirement says that the address space for the gamma site needs NAT
+    * Original address space is 10.3.0.0/24
+    * Will have a 1:1 static IngressSnat rule mapping the original address space to "3.3.0.0/24"
+* AKS is using a small public address space and a separate subnet for the load balancer.
+    * Small Ubuntu pod for testing
+    * Plus a test VM in the same subnet.
+* Virtual WAN with NAT rules applied to one connection (gamma) using REST API in null providers for the nat rules and for the connection.
+    * At the time of creation there is no support for Virtual WAN NAT rules in the azurerm Terraform provider
 
 ## Prereqs
 
@@ -20,6 +29,12 @@ Alternatively you can use your preferred editor and terminal if you have your la
 My setup is documented [here](https://azurecitadel.com/setup).
 
 ## Order
+
+The repo contains six linked Terraform configs. Some read the remote state files of other configs.
+
+* The ./sites and ./aks configs are deployed initially and may be created in parallel
+* The ./vwan config links to the AKS vnet
+* The ./connections/alpha, ./connections/beta, ./connections/gamma
 
 The sensible order is:
 
@@ -112,28 +127,6 @@ Deploy the Azure Virtual WAN. This will connect to the AKS virtual network.
     terraform init
     ```
 
-1. Display the AKS virtual network ID
-
-    ```bash
-    az network vnet show --name example-aks --resource-group example-aks --query id --output tsv
-    ```
-
-1. Create terraform.tfvars
-
-    Create a terraform.tfvars file to specify the value for var.aks_virtual_network_id.
-
-    Example file:
-
-    ```text
-    aks_virtual_network_id = "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/example-aks/providers/Microsoft.Network/virtualNetworks/example-aks"
-    ```
-
-    > Alternatively you can just run this one command:
-    >
-    > ```bash
-    > echo "aks_virtual_network_id = $(az network vnet show --name example-aks --resource-group example-aks --query id --output json)" > terraform.tfvars
-    > ```
-
 1. Deploy
 
     ```bash
@@ -176,4 +169,113 @@ Each site is in its own subdirectory to make it simpler to 'switch' individual c
     terraform apply
     ```
 
-##
+## Testing
+
+### Configure kubectl
+
+1. kubectl binary
+
+    Install kubectl.
+
+    ```bash
+    az aks install-cli
+    ```
+
+1. kubeconfig
+
+    Merge in the kubeconfig details.
+
+    ```bash
+    az aks get-credentials --name example-aks --resource-group example-aks
+    ```
+
+1. Checks
+
+    Check the nodes.
+
+    ```bash
+    kubectl get nodes
+    ```
+
+    Check the pod.
+
+    ```bash
+    kubectl get pods
+    ```
+
+### Configure the pod
+
+1. Run bash on the pod
+
+    ```bash
+    kubectl exec --stdin --tty ubuntu -- /bin/bash
+    ```
+
+1. Install openssh
+
+    ```bash
+    apt-get update && apt-get install openssh-client -y
+    ```
+
+1. Exit
+
+    ```bash
+    exit
+    ```
+
+1. Upload the private SSH key
+
+    ```bash
+    kubectl cp ~/.ssh/id_rsa ubuntu:/id_rsa
+    ```
+
+### Test connectivity to a VM
+
+NIC IP addresses
+
+| VM | IP address | Notes |
+|---|---|---|
+| example | 10.76.0.4 | in the AKS vnet |
+| example-alpha | 3.1.0.4 ||
+| example-beta | 3.2.0.4 ||
+| example-gamma | 3.3.0.4 | NAT from 10.3.0.4 |
+
+> Assumes he variable defaults in the repo have been used.
+
+1. Run bash on the pod
+
+
+    ```bash
+    kubectl exec --stdin --tty ubuntu -- /bin/bash
+    ```
+
+1. SSH to the VM
+
+    The command is connecting to the example-alpha VM.
+
+    ```bash
+    ssh -i id_rsa azureuser@3.1.0.4
+    ```
+
+    If it connects then the WAN links and/or NAT rules are working correctly.
+
+1. Display the source IP
+
+    ```bash
+    echo $SSH_CLIENT | awk '{print $1}'
+    ```
+
+    The command should display 1.2.3.4, 1.2.3.5 or 1.2.3.6 depending on which AKS node is hosting the ubuntu pod.
+
+## Notes for gamma
+
+The gamma connection uses the preview NAT feature to 1:1 map 10.3.0.0/24 to 3.3.0.0/24. (The CIDR subnet masks must be the same length.)
+
+The ./connections/gamma/gamma.tf file creates the JSON object in the locals and then uses jsonencode as part of the REST API call.
+
+A ./connections/gamma/gamma.tf.hardcoded file is also included to show how a simplified file would look without all of the functions etc.
+
+References:
+
+* <https://docs.microsoft.com/rest/api/virtualwan/nat-rules/create-or-update>
+* <https://docs.microsoft.com/rest/api/virtualwan/vpn-connections/create-or-update>

@@ -66,7 +66,7 @@ info "Creating remote site $site"
 # az network vpn-site create --name $site --ip-address $siteVpnGwIp --resource-group $hubrg --asn $siteVpnGwAsn --bgp-peering-address $siteVpnGwBgpIp --virtual-wan $vwan --location "$loc" --device-model VNETGW --device-vendor Azure --link-speed 100
 uri="$hubrgId/providers/Microsoft.Network/vpnSites/$site?api-version=2020-11-01"
 az rest --method put --body "@site-$site.json" --uri "$uri"
-info "... note that BGP IP address in site-$site.json has been changed from 10.2.0.254 to 10.102.0.254 to match the ingress NAT rule."
+info "... note that BGP IP address in site-$site.json has been manually changed to match the ingress NAT rule."
 
 info "Creating connection to-$site"
 uri="$hubVpnGwId/vpnConnections/to-$site?api-version=2020-11-01"

@@ -15,7 +15,7 @@
               "id": "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/commify-secure-hub/providers/Microsoft.Network/vpnGateways/2b74b8806d9b43bd82e37129aa22f2d9-westeurope-gw/natRules/gamma-ingress"
             }
           ],
-          "sharedKey": "c0mm1fy",
+          "sharedKey": "f4abf9f9d871469409f36c40687d888b",
           "usePolicyBasedTrafficSelectors": false,
           "vpnConnectionProtocolType": "IKEv2",
           "vpnLinkConnectionMode": "Default",

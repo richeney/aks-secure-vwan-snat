@@ -16,7 +16,7 @@
         "properties": {
           "ipAddress": "13.73.190.26",
           "bgpProperties": {
-            "bgpPeeringAddress": "10.102.0.254",
+            "bgpPeeringAddress": "3.3.0.254",
             "asn": 66523
           }
         }

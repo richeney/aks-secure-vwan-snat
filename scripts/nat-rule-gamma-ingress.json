@@ -4,12 +4,12 @@
     "type": "Static",
     "internalMappings": [
       {
-        "addressSpace": "10.2.0.0/24"
+        "addressSpace": "10.3.0.0/24"
       }
     ],
     "externalMappings": [
       {
-        "addressSpace": "10.102.0.0/24"
+        "addressSpace": "3.3.0.0/24"
       }
     ]
   }

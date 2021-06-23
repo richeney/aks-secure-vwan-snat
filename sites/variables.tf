@@ -19,7 +19,7 @@ variable "sites" {
     },
     {
       name          = "gamma"
-      address_space = "3.2.0.0/24"
+      address_space = "10.3.0.0/24"
       asn           = 66523
     }
   ]

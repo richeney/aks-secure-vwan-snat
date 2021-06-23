@@ -1,0 +1,117 @@
+// Outgoing connection
+
+resource "azurerm_vpn_site" "gamma" {
+  name                = "gamma-site"
+  resource_group_name = "example-wvan"
+  location            = "West Europe"
+  virtual_wan_id      = "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/test-vwan/providers/Microsoft.Network/virtualWans/test-vwan"
+
+  device_model  = "VNETGW"
+  device_vendor = "Azure"
+  address_cidrs = ["3.3.0.0/24"] // Post NAT address space
+
+  link {
+    name          = "link1"
+    ip_address    = "40.91.212.173"
+    speed_in_mbps = 100
+  }
+}
+
+//---------------------------------------------------------------------------------------------------------------
+
+resource "null_resource" "nat_rule" {
+  provisioner "local-exec" {
+    command = "az rest --method PUT --url ${self.triggers.uri} --body '${self.triggers.body}'"
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "az rest --method DELETE --url ${self.triggers.uri}"
+  }
+
+  triggers = {
+    id   = "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/test-vwan/providers/Microsoft.Network/vpnGateways/test-vpngw/natRules/gamma"
+    name = "gamma"
+    mode = "IngressSnat"
+    uri  = "https://management.azure.com/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/test-vwan/providers/Microsoft.Network/vpnGateways/test-vpngw/natRules/gamma?api-version=2020-11-01"
+    body = jsonencode({
+      properties = {
+        mode = "IngressSnat"
+        type = "Static"
+        internalMappings = [
+          { addressSpace = "10.3.0.0/24" }
+        ]
+        externalMappings = [
+          { addressSpace = "3.3.0.0/24" }
+        ]
+      }
+    })
+  }
+}
+
+//---------------------------------------------------------------------------------------------------------------
+
+resource "null_resource" "vpn_gateway_connection" {
+  depends_on = [
+    azurerm_vpn_site.gamma,
+    null_resource.nat_rule
+  ]
+
+  provisioner "local-exec" {
+    command = "az rest --method PUT --url ${self.triggers.uri} --body '${self.triggers.body}'"
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "az rest --method DELETE --url ${self.triggers.uri}"
+  }
+
+  triggers = {
+    name = "gamma"
+    id   = "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/test-vwan/providers/Microsoft.Network/vpnGateways/test-vpngw/vpnConnections/gamma"
+    uri  = "https://management.azure.com/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/test-vwan/providers/Microsoft.Network/vpnGateways/test-vpngw/vpnConnections/gamma?api-version=2020-11-01"
+
+    body = jsonencode({
+      properties = {
+        remoteVpnSite = {
+          id = "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/test-vwan/providers/Microsoft.Network/vpnSites/gamma-site"
+        }
+        vpnLinkConnections = [
+          {
+            name = "gamma"
+            properties = {
+              vpnSiteLink = {
+                id = "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/test-vwan/providers/Microsoft.Network/vpnSites/gamma-site/vpnSiteLinks/link1"
+              }
+              enableBgp      = false
+              egressNatRules = []
+              ingressNatRules = [{
+                id = "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/test-vwan/providers/Microsoft.Network/vpnGateways/test-vpngw/natRules/gamma"
+              }]
+              sharedKey                      = "f4abf9f9d871469409f36c40687d888b"
+              usePolicyBasedTrafficSelectors = false
+              vpnConnectionProtocolType      = "IKEv2"
+              vpnLinkConnectionMode          = "Default"
+            }
+          }
+        ]
+      }
+    })
+  }
+}
+
+//==========================================================================================
+
+// Return connection. Not needed if connecting to a real on prem VPN device.
+
+resource "azurerm_virtual_network_gateway_connection" "gamma-lng0" {
+  name                = "gamma-to-hub-vpngw-lng0"
+  location            = "West Europe"
+  resource_group_name = "example-gamma"
+
+  type                       = "IPsec"
+  virtual_network_gateway_id = "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/test-gamma/providers/Microsoft.Network/virtualNetworkGateways/test-gamma-vpngw"
+  local_network_gateway_id   = "/subscriptions/2ca40be1-7e80-4f2b-92f7-06b2123a68cc/resourceGroups/test-vwan/providers/Microsoft.Network/localNetworkGateways/test-return-connection-lng-a"
+  enable_bgp                 = false
+  shared_key                 = "f4abf9f9d871469409f36c40687d888b" // Just a string - needs to match for the bi-directional connections
+}
