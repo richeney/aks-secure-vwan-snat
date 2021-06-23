@@ -2,8 +2,6 @@
 
 ## Description
 
-ADD A GRAPHIC.
-
 Example Terraform configs for
 
 * Three sites, alpha, beta and gamma, Each has
@@ -34,7 +32,7 @@ The repo contains six linked Terraform configs. Some read the remote state files
 
 * The ./sites and ./aks configs are deployed initially and may be created in parallel
 * The ./vwan config links to the AKS vnet
-* The ./connections/alpha, ./connections/beta, ./connections/gamma
+* The ./connections/alpha, ./connections/beta, ./connections/gamma, which access the state of both the sites and the virtual WAN
 
 The sensible order is:
 
@@ -53,15 +51,15 @@ The sensible order is:
     git clone https://github.com/richeney/aks-vwan-nat
     ```
 
-    This readme assumes you are in the
+    This readme assumes you are in your home directory.
 
 ## AKS
 
 Deploy the test AKS environment.
 
-Note that is uses a tiny public address prefix by default as per my POC brief.
+Note that is uses a tiny public address prefix by default as per the POC brief.
 
-> Feel free to change this to a purely  private address space and update the subnet address prefixes appropriately.
+> Feel free to change this to a purely private address space and update the subnet address prefixes appropriately.
 
 The loadbalancer subnet is specified by the loadbalancer annotations in the YAML kubernetes service definition so that it doesn't consume IP addresses from the aks subnet.
 
@@ -89,7 +87,7 @@ The loadbalancer subnet is specified by the loadbalancer annotations in the YAML
 
 Repeat for the sites folder to deploy the three sites. These represent different branches or customers. Note that if you have real branches with S2S VPN devices then you don't need the sites area. You will have to adjust the connections later for your target environments.
 
-> You can run this in a separate termain or CLoud Shell session whilst the AKS environment is deploying if you need to save time,.
+> Save time by running  this in a separate terminal or Cloud Shell session whilst the AKS environment is deploying.
 
 1. Change directory
 
@@ -242,7 +240,9 @@ NIC IP addresses
 
 > Assumes he variable defaults in the repo have been used.
 
-1. Run bash on the pod
+Check the effective routes on each VM's NIC. The routing should be present (including the SNAT range) for AKS to sites, but there should not be any route information for one site to connect to another.
+
+1. Run bash on the ubuntu pod
 
 
     ```bash
@@ -267,6 +267,10 @@ NIC IP addresses
 
     The command should display 1.2.3.4, 1.2.3.5 or 1.2.3.6 depending on which AKS node is hosting the ubuntu pod.
 
+## Troubleshooting
+
+1. Check
+
 ## Notes for gamma
 
 The gamma connection uses the preview NAT feature to 1:1 map 10.3.0.0/24 to 3.3.0.0/24. (The CIDR subnet masks must be the same length.)
@@ -275,7 +279,9 @@ The ./connections/gamma/gamma.tf file creates the JSON object in the locals and 
 
 A ./connections/gamma/gamma.tf.hardcoded file is also included to show how a simplified file would look without all of the functions etc.
 
-References:
+## References:
 
+* <https://docs.microsoft.com/azure/virtual-wan/nat-rules-vpn-gateway>
+* <https://aka.ms/terraform>
 * <https://docs.microsoft.com/rest/api/virtualwan/nat-rules/create-or-update>
 * <https://docs.microsoft.com/rest/api/virtualwan/vpn-connections/create-or-update>
